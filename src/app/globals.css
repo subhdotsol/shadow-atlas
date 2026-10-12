@@ -1,26 +1,279 @@
 @import "tailwindcss";
 
+/* Studio (light), from the brand reference. See brand.md.
+   The active theme is set as data-theme on <html> by the inline script in layout.tsx. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --background: oklch(0.973 0 0);
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.953 0 0);
+  --border: oklch(0.915 0 0);
+  --foreground: oklch(0.24 0 0);
+  --muted: oklch(0.5 0 0);
+  --faint: oklch(0.8 0 0);
+
+  --ember: oklch(0.63 0.17 46);
+  --on-ember: oklch(1 0 0);
+  --tide: oklch(0.56 0.2 262);
+  --on-tide: oklch(1 0 0);
+  --neutral: oklch(1 0 0);
+  --on-neutral: oklch(0.42 0 0);
+  /* World map: land in a neutral (unheld) region, and land outside the 8 regions. */
+  --land: oklch(0.86 0 0);
+  --land-unclaimed: oklch(0.93 0 0);
+
+  --danger: oklch(0.55 0.2 25);
+  --success: oklch(0.6 0.16 150);
+  --on-success: oklch(1 0 0);
+  --devnet: oklch(0.52 0.12 65);
+  --ring: oklch(0.56 0.2 262);
+
+  --shadow-card: 0 1px 1px oklch(0 0 0 / 0.03), 0 2px 4px oklch(0 0 0 / 0.03), 0 12px 32px -12px oklch(0 0 0 / 0.1);
+  --shadow-key: 0 1px 0 oklch(0 0 0 / 0.04), 0 2px 0 oklch(0.88 0 0), 0 6px 14px -6px oklch(0 0 0 / 0.12);
+  --shadow-float: 0 2px 6px oklch(0 0 0 / 0.04), 0 18px 40px -16px oklch(0 0 0 / 0.18);
+}
+
+/* Night studio (dark): the same sheet in graphite. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: oklch(0.17 0 0);
+  --surface: oklch(0.215 0 0);
+  --surface-2: oklch(0.26 0 0);
+  --border: oklch(0.3 0 0);
+  --foreground: oklch(0.95 0 0);
+  --muted: oklch(0.72 0 0);
+  --faint: oklch(0.42 0 0);
+
+  --ember: oklch(0.72 0.16 52);
+  --on-ember: oklch(0.2 0.03 50);
+  --tide: oklch(0.68 0.16 262);
+  --on-tide: oklch(0.16 0.03 262);
+  --neutral: oklch(0.26 0 0);
+  --on-neutral: oklch(0.9 0 0);
+  --land: oklch(0.36 0 0);
+  --land-unclaimed: oklch(0.27 0 0);
+
+  --danger: oklch(0.72 0.17 25);
+  --success: oklch(0.75 0.15 150);
+  --on-success: oklch(0.2 0.04 150);
+  --devnet: oklch(0.82 0.14 80);
+  --ring: oklch(0.72 0.14 262);
+
+  --shadow-card: 0 1px 1px oklch(0 0 0 / 0.3), 0 12px 32px -12px oklch(0 0 0 / 0.6);
+  --shadow-key: 0 2px 0 oklch(0.13 0 0), 0 6px 14px -6px oklch(0 0 0 / 0.6);
+  --shadow-float: 0 2px 6px oklch(0 0 0 / 0.3), 0 18px 40px -16px oklch(0 0 0 / 0.7);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-ember: var(--ember);
+  --color-on-ember: var(--on-ember);
+  --color-tide: var(--tide);
+  --color-on-tide: var(--on-tide);
+  --color-neutral: var(--neutral);
+  --color-on-neutral: var(--on-neutral);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-on-success: var(--on-success);
+  --color-devnet: var(--devnet);
+  --color-ring: var(--ring);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-key: var(--shadow-key);
+  --shadow-float: var(--shadow-float);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-geist-sans);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Tactile buttons, after the reference's dark "Subscribe" and glowing blue CTA. */
+.btn-graphite {
+  background: linear-gradient(to bottom, oklch(0.36 0 0), oklch(0.22 0 0));
+  color: oklch(0.98 0 0);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.16),
+    0 1px 2px oklch(0 0 0 / 0.2),
+    0 6px 14px -6px oklch(0 0 0 / 0.35);
+}
+.btn-graphite:not(:disabled):hover {
+  background: linear-gradient(to bottom, oklch(0.4 0 0), oklch(0.26 0 0));
+}
+/* On a graphite page the primary button inverts to pearl. */
+[data-theme="dark"] .btn-graphite,
+[data-theme="dark"] .wallet-adapter-button-trigger {
+  background: linear-gradient(to bottom, oklch(0.97 0 0), oklch(0.86 0 0));
+  color: oklch(0.18 0 0);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.6),
+    0 1px 2px oklch(0 0 0 / 0.4),
+    0 8px 18px -8px oklch(0 0 0 / 0.7);
+}
+[data-theme="dark"] .btn-graphite:not(:disabled):hover,
+[data-theme="dark"] .wallet-adapter-button-trigger:not([disabled]):hover {
+  background: linear-gradient(to bottom, oklch(1 0 0), oklch(0.9 0 0));
+}
+.btn-tide {
+  background: linear-gradient(to bottom, oklch(0.62 0.18 262), oklch(0.52 0.2 262));
+  color: oklch(1 0 0);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.25),
+    0 1px 2px oklch(0.4 0.15 262 / 0.3),
+    0 10px 24px -8px oklch(0.6 0.19 262 / 0.55);
+}
+.btn-tide:not(:disabled):hover {
+  background: linear-gradient(to bottom, oklch(0.65 0.17 262), oklch(0.55 0.2 262));
+}
+.btn-paper {
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
+}
+.btn-paper:not(:disabled):hover {
+  background: var(--surface-2);
+}
+
+/* Theme switch: an inset track with a raised knob. In graphite the surface tones invert,
+   so the knob stays lighter than its track in both themes. */
+.switch-track {
+  background: var(--surface-2);
+}
+.switch-knob {
+  background: var(--surface);
+}
+[data-theme="dark"] .switch-track {
+  background: var(--background);
+}
+[data-theme="dark"] .switch-knob {
+  background: var(--surface-2);
+}
+
+/* Ruler ticks in the page margins, as in the reference. */
+.ruler {
+  background-image: repeating-linear-gradient(to bottom, var(--faint) 0 1px, transparent 1px 25px);
+  background-size: 6px 100%;
+  background-repeat: no-repeat;
+}
+
+/* Wallet adapter button + modal, mapped onto the brand tokens. */
+.wallet-adapter-button {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
+}
+.wallet-adapter-button:not([disabled]):hover {
+  background: var(--surface-2);
+}
+.wallet-adapter-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.wallet-adapter-button-trigger {
+  background: linear-gradient(to bottom, oklch(0.36 0 0), oklch(0.22 0 0));
+  color: oklch(0.98 0 0);
+  border-color: transparent;
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.16),
+    0 6px 14px -6px oklch(0 0 0 / 0.35);
+}
+.wallet-adapter-button-trigger:not([disabled]):hover {
+  background: linear-gradient(to bottom, oklch(0.4 0 0), oklch(0.26 0 0));
+}
+.wallet-adapter-dropdown-list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-float);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+.wallet-adapter-dropdown-list-item:not([disabled]):hover {
+  background: var(--surface-2);
+}
+.wallet-adapter-modal-wrapper {
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-float);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+.wallet-adapter-modal-overlay {
+  background: oklch(0.2 0 0 / 0.35);
+}
+.wallet-adapter-modal-title {
+  color: var(--foreground);
+}
+.wallet-adapter-modal-list .wallet-adapter-button {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.wallet-adapter-modal-list .wallet-adapter-button:not([disabled]):hover {
+  background: var(--surface-2);
+}
+.wallet-adapter-modal-button-close {
+  background: var(--surface-2);
+}
+.wallet-adapter-modal-button-close svg {
+  fill: var(--muted);
+}
+.wallet-adapter-modal-list-more {
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+
+
+
+
+
+/* The turn result card's countdown bar. */
+@keyframes shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* A count that just changed on the map. */
+@keyframes pop {
+  0% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
