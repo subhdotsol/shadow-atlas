@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   experimental: {
     agentFeedback: true,
   },
+  // Anchor's ESM build references CommonJS `exports`; load it with Node's require on the server.
+  serverExternalPackages: ["@coral-xyz/anchor"],
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
