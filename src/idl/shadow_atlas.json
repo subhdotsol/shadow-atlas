@@ -1,0 +1,2030 @@
+{
+  "address": "7EJzHvTvmxWZynJKpKWHGdfDd9wrNFx6RT63B5TrDbkz",
+  "metadata": {
+    "name": "shadow_atlas",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "docs": [
+    "Shadow Atlas: two players, eight territories, simultaneous hidden moves.",
+    "",
+    "Lifecycle:",
+    "- Solana base layer: `create_match` -> `join_match` -> `delegate_match`",
+    "- MagicBlock Private ER: `init_permissions` ->",
+    "(`submit_secret_move` then `announce_commit`, per player; the second announce",
+    "resolves the turn, `resolve_turn` is a permissionless fallback)*",
+    "-> `settle_match`, which commits the final state back to Solana.",
+    "`claim_timeout` ends a turn the opponent has stalled."
+  ],
+  "instructions": [
+    {
+      "name": "announce_commit",
+      "docs": [
+        "Private ER. Separate transaction after a submit: flags the commit publicly and",
+        "resolves the turn if the opponent has committed too."
+      ],
+      "discriminator": [
+        7,
+        52,
+        106,
+        10,
+        46,
+        12,
+        17,
+        148
+      ],
+      "accounts": [
+        {
+          "name": "player",
+          "signer": true
+        },
+        {
+          "name": "match_account",
+          "writable": true
+        },
+        {
+          "name": "move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_a",
+                "account": "Match"
+              }
+            ]
+          }
+        },
+        {
+          "name": "move_b",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_b",
+                "account": "Match"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel_match",
+      "docs": [
+        "Base layer. Creator closes a match nobody has joined."
+      ],
+      "discriminator": [
+        142,
+        136,
+        247,
+        45,
+        92,
+        112,
+        180,
+        83
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "match_account"
+          ]
+        },
+        {
+          "name": "match_account",
+          "writable": true
+        },
+        {
+          "name": "move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_timeout",
+      "docs": [
+        "Private ER. Ends a stalled turn after `TURN_TIMEOUT_SECS`."
+      ],
+      "discriminator": [
+        130,
+        234,
+        45,
+        53,
+        120,
+        90,
+        86,
+        178
+      ],
+      "accounts": [
+        {
+          "name": "player",
+          "signer": true
+        },
+        {
+          "name": "match_account",
+          "writable": true
+        },
+        {
+          "name": "move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_a",
+                "account": "Match"
+              }
+            ]
+          }
+        },
+        {
+          "name": "move_b",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_b",
+                "account": "Match"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_match",
+      "docs": [
+        "UC01. Base layer. Creates the match PDA and the creator's move PDA."
+      ],
+      "discriminator": [
+        107,
+        2,
+        184,
+        145,
+        70,
+        142,
+        17,
+        165
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "match_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  116,
+                  99,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "code"
+              }
+            ]
+          }
+        },
+        {
+          "name": "move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "code",
+          "type": {
+            "array": [
+              "u8",
+              6
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "delegate_match",
+      "docs": [
+        "Base layer. Delegates match + both move PDAs to the TEE validator."
+      ],
+      "discriminator": [
+        30,
+        116,
+        9,
+        69,
+        147,
+        61,
+        133,
+        238
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "buffer_match_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                92,
+                143,
+                2,
+                204,
+                143,
+                13,
+                67,
+                242,
+                186,
+                26,
+                44,
+                75,
+                169,
+                57,
+                61,
+                159,
+                48,
+                102,
+                16,
+                12,
+                183,
+                244,
+                38,
+                86,
+                121,
+                125,
+                199,
+                45,
+                149,
+                197,
+                18,
+                239
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_match_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_match_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "match_account",
+          "writable": true
+        },
+        {
+          "name": "buffer_move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "move_a"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                92,
+                143,
+                2,
+                204,
+                143,
+                13,
+                67,
+                242,
+                186,
+                26,
+                44,
+                75,
+                169,
+                57,
+                61,
+                159,
+                48,
+                102,
+                16,
+                12,
+                183,
+                244,
+                38,
+                86,
+                121,
+                125,
+                199,
+                45,
+                149,
+                197,
+                18,
+                239
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "move_a"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "move_a"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "move_a",
+          "writable": true
+        },
+        {
+          "name": "buffer_move_b",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "move_b"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                92,
+                143,
+                2,
+                204,
+                143,
+                13,
+                67,
+                242,
+                186,
+                26,
+                44,
+                75,
+                169,
+                57,
+                61,
+                159,
+                48,
+                102,
+                16,
+                12,
+                183,
+                244,
+                38,
+                86,
+                121,
+                125,
+                199,
+                45,
+                149,
+                197,
+                18,
+                239
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_move_b",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "move_b"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_move_b",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "move_b"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "move_b",
+          "writable": true
+        },
+        {
+          "name": "validator",
+          "address": "MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo"
+        },
+        {
+          "name": "owner_program",
+          "address": "7EJzHvTvmxWZynJKpKWHGdfDd9wrNFx6RT63B5TrDbkz"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "init_permissions",
+      "docs": [
+        "Private ER. Public permission on the match, owner-only permission on each move."
+      ],
+      "discriminator": [
+        247,
+        240,
+        133,
+        29,
+        26,
+        176,
+        185,
+        61
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "match_account",
+          "writable": true
+        },
+        {
+          "name": "move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_a",
+                "account": "Match"
+              }
+            ]
+          }
+        },
+        {
+          "name": "move_b",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_b",
+                "account": "Match"
+              }
+            ]
+          }
+        },
+        {
+          "name": "permission_match",
+          "writable": true
+        },
+        {
+          "name": "permission_a",
+          "writable": true
+        },
+        {
+          "name": "permission_b",
+          "writable": true
+        },
+        {
+          "name": "permission_program",
+          "address": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
+        },
+        {
+          "name": "ephemeral_vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "join_match",
+      "docs": [
+        "UC02. Base layer. Second player joins; the board is initialized."
+      ],
+      "discriminator": [
+        244,
+        8,
+        47,
+        130,
+        192,
+        59,
+        179,
+        44
+      ],
+      "accounts": [
+        {
+          "name": "player",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "match_account",
+          "writable": true
+        },
+        {
+          "name": "move_b",
+          "docs": [
+            "`init` also rejects a second join attempt by the same wallet."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "player"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "process_undelegation",
+      "discriminator": [
+        196,
+        28,
+        41,
+        206,
+        48,
+        37,
+        51,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "base_account",
+          "writable": true
+        },
+        {
+          "name": "buffer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  110,
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  101,
+                  45,
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "base_account"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                181,
+                183,
+                0,
+                225,
+                242,
+                87,
+                58,
+                192,
+                204,
+                6,
+                34,
+                1,
+                52,
+                74,
+                207,
+                151,
+                184,
+                53,
+                6,
+                235,
+                140,
+                229,
+                25,
+                152,
+                204,
+                98,
+                126,
+                24,
+                147,
+                128,
+                167,
+                62
+              ]
+            }
+          }
+        },
+        {
+          "name": "payer",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "account_seeds",
+          "type": {
+            "vec": "bytes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "resolve_turn",
+      "docs": [
+        "UC04. Private ER. Resolves the turn once both players committed."
+      ],
+      "discriminator": [
+        97,
+        96,
+        32,
+        80,
+        136,
+        41,
+        228,
+        44
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "signer": true
+        },
+        {
+          "name": "match_account",
+          "writable": true
+        },
+        {
+          "name": "move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_a",
+                "account": "Match"
+              }
+            ]
+          }
+        },
+        {
+          "name": "move_b",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_b",
+                "account": "Match"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "settle_match",
+      "docs": [
+        "Private ER. Commits + undelegates the finished match back to Solana."
+      ],
+      "discriminator": [
+        71,
+        124,
+        117,
+        96,
+        191,
+        217,
+        116,
+        24
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "match_account",
+          "writable": true
+        },
+        {
+          "name": "move_a",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_a",
+                "account": "Match"
+              }
+            ]
+          }
+        },
+        {
+          "name": "move_b",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "match_account"
+              },
+              {
+                "kind": "account",
+                "path": "match_account.player_b",
+                "account": "Match"
+              }
+            ]
+          }
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "magic_context",
+          "writable": true,
+          "address": "MagicContext1111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "submit_secret_move",
+      "docs": [
+        "UC03. Private ER. Commits the signer's hidden action for `turn`."
+      ],
+      "discriminator": [
+        248,
+        242,
+        186,
+        244,
+        73,
+        72,
+        144,
+        38
+      ],
+      "accounts": [
+        {
+          "name": "player",
+          "signer": true
+        },
+        {
+          "name": "player_move",
+          "docs": [
+            "Seeds bind the move PDA to the signer: a player can only write their own move."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "player_move.match_account",
+                "account": "PlayerMove"
+              },
+              {
+                "kind": "account",
+                "path": "player"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "turn",
+          "type": "u32"
+        },
+        {
+          "name": "action",
+          "type": {
+            "defined": {
+              "name": "Action"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Match",
+      "discriminator": [
+        236,
+        63,
+        169,
+        38,
+        15,
+        56,
+        196,
+        162
+      ]
+    },
+    {
+      "name": "PlayerMove",
+      "discriminator": [
+        213,
+        41,
+        205,
+        203,
+        240,
+        72,
+        80,
+        150
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "MatchCreated",
+      "discriminator": [
+        151,
+        176,
+        11,
+        24,
+        34,
+        225,
+        227,
+        16
+      ]
+    },
+    {
+      "name": "MatchFinished",
+      "discriminator": [
+        64,
+        23,
+        27,
+        37,
+        145,
+        154,
+        100,
+        255
+      ]
+    },
+    {
+      "name": "MoveAnnounced",
+      "discriminator": [
+        18,
+        14,
+        72,
+        43,
+        121,
+        250,
+        6,
+        225
+      ]
+    },
+    {
+      "name": "MoveCommitted",
+      "discriminator": [
+        236,
+        104,
+        12,
+        242,
+        153,
+        135,
+        13,
+        77
+      ]
+    },
+    {
+      "name": "PlayerJoined",
+      "discriminator": [
+        39,
+        144,
+        49,
+        106,
+        108,
+        210,
+        183,
+        38
+      ]
+    },
+    {
+      "name": "TurnOpened",
+      "discriminator": [
+        251,
+        31,
+        119,
+        50,
+        176,
+        106,
+        254,
+        144
+      ]
+    },
+    {
+      "name": "TurnResolved",
+      "discriminator": [
+        123,
+        208,
+        138,
+        8,
+        148,
+        6,
+        53,
+        10
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotWaitingForPlayer",
+      "msg": "Match is not waiting for a second player"
+    },
+    {
+      "code": 6001,
+      "name": "CannotJoinOwnMatch",
+      "msg": "Creator cannot join their own match"
+    },
+    {
+      "code": 6002,
+      "name": "MatchFull",
+      "msg": "Match already has two players"
+    },
+    {
+      "code": 6003,
+      "name": "NotReady",
+      "msg": "Match is not in the Ready state"
+    },
+    {
+      "code": 6004,
+      "name": "TurnNotOpen",
+      "msg": "Match is not accepting moves"
+    },
+    {
+      "code": 6005,
+      "name": "NotAPlayer",
+      "msg": "Signer is not a player in this match"
+    },
+    {
+      "code": 6006,
+      "name": "StaleTurn",
+      "msg": "Turn number does not match the current turn"
+    },
+    {
+      "code": 6007,
+      "name": "AlreadyCommitted",
+      "msg": "Player already committed a move this turn"
+    },
+    {
+      "code": 6008,
+      "name": "MissingCommit",
+      "msg": "Both players must commit before the turn resolves"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidTerritory",
+      "msg": "Territory index out of range"
+    },
+    {
+      "code": 6010,
+      "name": "NotOwner",
+      "msg": "Territory is not owned by this player"
+    },
+    {
+      "code": 6011,
+      "name": "NotAdjacent",
+      "msg": "Target does not border the attacking territory"
+    },
+    {
+      "code": 6012,
+      "name": "AttackOwnTerritory",
+      "msg": "Cannot attack your own territory"
+    },
+    {
+      "code": 6013,
+      "name": "InsufficientStrength",
+      "msg": "Attacking territory needs at least 2 strength"
+    },
+    {
+      "code": 6014,
+      "name": "MatchNotFinished",
+      "msg": "Match is not finished"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidAccount",
+      "msg": "Account does not match the expected PDA"
+    },
+    {
+      "code": 6016,
+      "name": "CommitSameSlot",
+      "msg": "Turn must resolve in a later slot than the last commit"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidPermission",
+      "msg": "Existing permission account does not match the required access rules"
+    },
+    {
+      "code": 6018,
+      "name": "TurnNotTimedOut",
+      "msg": "The turn timeout has not elapsed"
+    },
+    {
+      "code": 6019,
+      "name": "BothCommitted",
+      "msg": "Both moves are committed; resolve the turn instead"
+    },
+    {
+      "code": 6020,
+      "name": "OpponentCommitted",
+      "msg": "Only the player who committed can claim the timeout"
+    },
+    {
+      "code": 6021,
+      "name": "MovesNotCleared",
+      "msg": "Unrevealed moves must be cleared before settlement"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidTroops",
+      "msg": "Troops must be at least 1 and leave at least 1 behind"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidRoomCode",
+      "msg": "Room code must be 6 characters from A-Z (no I or O) and 2-9"
+    }
+  ],
+  "types": [
+    {
+      "name": "Action",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Attack",
+            "fields": [
+              {
+                "name": "from",
+                "type": "u8"
+              },
+              {
+                "name": "target",
+                "type": "u8"
+              },
+              {
+                "name": "troops",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "Reinforce",
+            "fields": [
+              {
+                "name": "from",
+                "type": "u8"
+              },
+              {
+                "name": "to",
+                "type": "u8"
+              },
+              {
+                "name": "troops",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "Hold"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Board",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "`OWNER_NONE`, `OWNER_A` or `OWNER_B` per territory."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          },
+          {
+            "name": "strength",
+            "docs": [
+              "Troops per territory."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Match",
+      "docs": [
+        "Public match state. Delegated to the Private ER with a *public* permission, so both",
+        "players and observers can read it. It never holds an unrevealed move, and no",
+        "transaction that carries an unrevealed move references it.",
+        "",
+        "Seeds: `[\"match\", code]`. The 6-character room code is the match's public name:",
+        "anyone with the code can derive the address and join."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "code",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "player_a",
+            "type": "pubkey"
+          },
+          {
+            "name": "player_b",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "MatchStatus"
+              }
+            }
+          },
+          {
+            "name": "turn",
+            "docs": [
+              "Current turn accepting moves (1-based once the match is TurnOpen)."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "board",
+            "type": {
+              "defined": {
+                "name": "Board"
+              }
+            }
+          },
+          {
+            "name": "turn_started_at",
+            "docs": [
+              "When the current turn opened; drives `claim_timeout`."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "a_committed",
+            "docs": [
+              "Public \"has committed\" signals for the current turn, set by `announce_commit`",
+              "in a transaction that carries no move data."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "b_committed",
+            "type": "bool"
+          },
+          {
+            "name": "last_turn",
+            "docs": [
+              "Both actions of the most recently resolved turn — the public reveal."
+            ],
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "RevealedTurn"
+                }
+              }
+            }
+          },
+          {
+            "name": "outcome",
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "Outcome"
+                }
+              }
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MatchCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "match_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "code",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MatchFinished",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "match_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "outcome",
+            "type": {
+              "defined": {
+                "name": "Outcome"
+              }
+            }
+          },
+          {
+            "name": "turns_played",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MatchStatus",
+      "docs": [
+        "`Resolving` from the design doc is not stored: resolution is a single atomic",
+        "instruction, so the match moves straight from TurnOpen to TurnOpen/Finished."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "WaitingForPlayer"
+          },
+          {
+            "name": "Ready"
+          },
+          {
+            "name": "TurnOpen"
+          },
+          {
+            "name": "Finished"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MoveAnnounced",
+      "docs": [
+        "Public commit signal. Carries no action data."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "match_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "turn",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MoveCommitted",
+      "docs": [
+        "Deliberately carries no action data. Emitted only in the submit transaction,",
+        "which references nothing but the committing player's private move PDA."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "match_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "turn",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Outcome",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "PlayerA"
+          },
+          {
+            "name": "PlayerB"
+          },
+          {
+            "name": "Draw"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlayerJoined",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "match_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "player_b",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlayerMove",
+      "docs": [
+        "One player's hidden move. Lives on the Private ER under a permission whose only",
+        "member is `player`, so the opponent cannot read it before the turn resolves.",
+        "",
+        "It also carries its own copy of the turn state (`open`, `turn`, `board`) so that",
+        "`submit_secret_move` never has to touch the public match account: the transaction",
+        "that carries the plaintext action references only the signer and this private PDA.",
+        "`resolve_turn` copies the action into the public `Match::last_turn` and clears it here.",
+        "",
+        "Seeds: `[\"move\", match, player]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "match_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "is_player_a",
+            "type": "bool"
+          },
+          {
+            "name": "open",
+            "docs": [
+              "Accepting a move for `turn`. Set by `init_permissions`, cleared when the match ends."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "turn",
+            "docs": [
+              "Turn currently accepting moves."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "board",
+            "docs": [
+              "Board at the start of `turn`, used to validate the action without the match account."
+            ],
+            "type": {
+              "defined": {
+                "name": "Board"
+              }
+            }
+          },
+          {
+            "name": "action",
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "Action"
+                }
+              }
+            }
+          },
+          {
+            "name": "committed_slot",
+            "docs": [
+              "Slot the action was committed in. Resolution must happen in a later slot."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RevealedTurn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "turn",
+            "type": "u32"
+          },
+          {
+            "name": "action_a",
+            "type": {
+              "defined": {
+                "name": "Action"
+              }
+            }
+          },
+          {
+            "name": "action_b",
+            "type": {
+              "defined": {
+                "name": "Action"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TurnOpened",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "match_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "turn",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TurnResolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "match_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "turn",
+            "type": "u32"
+          },
+          {
+            "name": "action_a",
+            "type": {
+              "defined": {
+                "name": "Action"
+              }
+            }
+          },
+          {
+            "name": "action_b",
+            "type": {
+              "defined": {
+                "name": "Action"
+              }
+            }
+          },
+          {
+            "name": "board",
+            "type": {
+              "defined": {
+                "name": "Board"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "MATCH_SEED",
+      "type": "bytes",
+      "value": "[109, 97, 116, 99, 104]"
+    },
+    {
+      "name": "MOVE_SEED",
+      "type": "bytes",
+      "value": "[109, 111, 118, 101]"
+    }
+  ]
+}
