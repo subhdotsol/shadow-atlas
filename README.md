@@ -1,6 +1,6 @@
-# Shadow Atlas — web
+# Shadow Atlas
 
-The frontend for [Shadow Atlas](https://github.com/narsixyz/shadow-atlas-contract), a two-player strategy game on Solana where both generals move in secret. Orders stay hidden from the opponent, enforced by MagicBlock's private rollup (TEE), until both are sealed.
+A two player strategy game on Solana where both generals move in secret. Orders stay hidden from the opponent, enforced by MagicBlock's private rollup (TEE), until both are sealed.
 
 **New to the game?** Read [How to play](HOW-TO-PLAY.md): the rules, the map, how to win and what winning gets you.
 
